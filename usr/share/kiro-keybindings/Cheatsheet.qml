@@ -225,17 +225,28 @@ Window {
                 clip: true
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-                Flow {
+                Row {
                     width: sv.availableWidth
                     spacing: 22
 
+                    // 3 top-aligned columns (masonry) — each packs its cards flush to the top,
+                    // so a short card never leaves a gap before the next one.
                     Repeater {
-                        model: backend.sections
-                        delegate: Rectangle {
-                            id: cardSection
-                            property color accent: win.t.accents[index % win.t.accents.length]
+                        model: 3
+                        delegate: Column {
+                            id: colDelegate
+                            property int col: index
                             width: Math.floor((sv.availableWidth - 2 * 22) / 3)
-                            height: secCol.implicitHeight + 36
+                            spacing: 22
+
+                            Repeater {
+                                model: backend.sections
+                                delegate: Rectangle {
+                                    id: cardSection
+                                    property color accent: win.t.accents[index % win.t.accents.length]
+                                    visible: index % 3 === colDelegate.col
+                                    width: colDelegate.width
+                                    height: secCol.implicitHeight + 36
                             radius: 18
                             color: win.t.cardBg
                             border.width: 1
@@ -337,6 +348,8 @@ Window {
                                         capFont: win.t.font
                                         capStyle: win.keyStyle
                                     }
+                                }
+                            }
                                 }
                             }
                         }
