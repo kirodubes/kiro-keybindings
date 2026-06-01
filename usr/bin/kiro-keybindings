@@ -1,0 +1,4 @@
+#!/bin/sh
+# Launch the Kiro Keybindings cheatsheet. Auto-detects the running TWM and shows
+# that environment's keybindings.txt. Pass --file to override.
+exec python /usr/share/kiro-keybindings/main.py "$@"
