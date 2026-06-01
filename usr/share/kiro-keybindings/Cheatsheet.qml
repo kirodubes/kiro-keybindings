@@ -10,7 +10,7 @@ Window {
     width: 1440
     height: 820
     flags: Qt.FramelessWindowHint | Qt.Dialog
-    color: "transparent"
+    color: win.t.bgBottom
 
     // ── Themes ──────────────────────────────────────────────────────────
     readonly property var themes: ({
@@ -106,10 +106,7 @@ Window {
     Rectangle {
         id: card
         anchors.fill: parent
-        anchors.margins: 20
-        radius: 24
-        border.width: 1
-        border.color: win.t.cardBorder
+        radius: 0
         gradient: Gradient {
             GradientStop { position: 0.0; color: win.t.bgTop }
             GradientStop { position: 1.0; color: win.t.bgBottom }
