@@ -17,4 +17,6 @@ files (made by `/kiro-create-keybindings`) are the source of truth.
 - Brand colors: blue `#0195F7`→`#0245B7`, green `#2FC328`; dark bg `#0F172A`/`#020617`.
 
 ## Status
-v1 wired into ohmychadwm only. Phase 2: other TWMs, XFCE, nemesis_repo package (`pyside6` dep).
+v1 wired into ohmychadwm; app also detects XFCE (`xfwm4` → `~/.config/xfce4/keybindings.txt`, launch
+on Ctrl+Super+S, both shipped via kiro-xfce). Phase 2 remaining: wire the other 6 TWMs' launch
+entries, nemesis_repo package (`pyside6` dep) so it actually ships + updates on installed systems.

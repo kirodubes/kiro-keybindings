@@ -23,6 +23,7 @@ WM_MAP = {
     "qtile": "qtile",
     "awesome": "awesome",
     "leftwm": "leftwm",
+    "xfwm4": "xfce4",
 }
 
 

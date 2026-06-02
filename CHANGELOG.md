@@ -2,6 +2,22 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.06.02
+
+### What Changed
+- **XFCE support in the app's auto-detection.** The cheatsheet now recognizes an XFCE session and
+  opens `~/.config/xfce4/keybindings.txt` — the file (and the Ctrl+Super+S launch binding) were
+  already shipped in `kiro-xfce`, but the app couldn't find them because its WM table was TWM-only.
+  XFCE is a shipped Kiro default, so it now gets the same one-keystroke cheatsheet as the 7 TWMs.
+
+### Technical Details
+- `main.py` — added `"xfwm4": "xfce4"` to `WM_MAP`. `detect_wm()` matches the running `xfwm4`
+  process via `pgrep -x` and resolves `~/.config/xfce4/keybindings.txt`. Parser/QML unchanged
+  (the `keybindings.txt` format is identical across environments).
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.06.01
 
 ### What Changed
