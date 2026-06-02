@@ -39,9 +39,11 @@ def detect_wm():
     return None
 
 
-def resolve_file(explicit):
+def resolve_file(explicit, dev=False):
     if explicit:
         return Path(explicit).expanduser()
+    if dev:
+        return Path(__file__).resolve().parent / "sample.keybindings.txt"
     wm = detect_wm()
     if wm:
         candidate = Path.home() / ".config" / wm / "keybindings.txt"
@@ -91,6 +93,8 @@ class Backend(QObject):
 def main():
     ap = argparse.ArgumentParser(prog="kiro-keybindings")
     ap.add_argument("--file", help="explicit keybindings.txt (overrides auto-detect)")
+    ap.add_argument("--dev", action="store_true",
+                    help="load the bundled sample keybindings (launches anywhere; for dev/screenshots/theming)")
     ap.add_argument("--title", help="override the window title text")
     ap.add_argument("--theme", default="", help="force a theme (overrides the saved choice); blank = use saved")
     ap.add_argument("--header", default="rule", help="category header style: rule | bar | dot | plain")
@@ -98,13 +102,14 @@ def main():
     ap.add_argument("--shot", help="render the window to this PNG (offscreen) and exit")
     args = ap.parse_args()
 
-    path = resolve_file(args.file)
+    path = resolve_file(args.file, args.dev)
     if not path or not path.exists():
-        print("kiro-keybindings: no keybindings.txt found for this environment", file=sys.stderr)
+        print("kiro-keybindings: no keybindings.txt found for this environment "
+              "(try --dev for the bundled sample)", file=sys.stderr)
         return 1
 
     title, sections = parse(str(path))
-    wm = detect_wm() or (title or "")
+    wm = "sample (dev)" if args.dev else (detect_wm() or title or "")
 
     if args.shot:
         os.environ["QT_QPA_PLATFORM"] = "offscreen"

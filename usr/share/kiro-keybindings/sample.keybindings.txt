@@ -1,0 +1,50 @@
+###############################################################################
+#  KEYBINDINGS — Sample (dev)
+#  Source: bundled demo — loaded via `kiro-keybindings --dev`
+#  Not a real environment's bindings; a representative sample for development,
+#  screenshots (--shot) and theme work. Launches anywhere, needs no detection.
+###############################################################################
+
+── 1. Applications & Launchers ───────────────────────────────────────────────
+  super + Return            alacritty (terminal)
+  super + d                 rofi drun (app launcher)
+  super + w                 default web browser
+  super + e                 thunar (file manager)
+  super + a                 archlinux-tweak-tool (ATT)
+
+── 2. Window Management ───────────────────────────────────────────────────────
+  super + q                 close focused window
+  super + f                 toggle fullscreen
+  super + space             toggle floating
+  super + j / k             focus next / previous window
+  super + shift + j / k     move window in stack
+
+── 3. Workspaces / Tags / Groups ─────────────────────────────────────────────
+  super + 1..0              switch to workspace 1–10
+  super + shift + 1..0      send window to workspace & follow
+
+── 4. Layout & Tiling ─────────────────────────────────────────────────────────
+  super + Tab               cycle to next layout
+  super + h / l             shrink / grow master area
+  super + i / shift + i     increase / decrease master count
+
+── 5. Multi-monitor ──────────────────────────────────────────────────────────
+  super + comma             focus previous monitor
+  super + period            focus next monitor
+  super + shift + period    move window to next monitor
+
+── 6. Multimedia & Hardware ──────────────────────────────────────────────────
+  XF86AudioRaiseVolume      volume up
+  XF86AudioLowerVolume      volume down
+  XF86AudioMute             toggle mute
+  XF86MonBrightnessUp       brightness up
+
+── 7. Screenshots ────────────────────────────────────────────────────────────
+  Print                     flameshot full screen
+  super + Print             flameshot region select
+  ctrl + Print              flameshot to clipboard
+
+── 8. System & Session ───────────────────────────────────────────────────────
+  super + ctrl + s          kiro-keybindings (this cheatsheet)
+  super + x                 archlinux-logout (power menu)
+  super + shift + r         reload window manager
