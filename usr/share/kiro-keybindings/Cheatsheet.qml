@@ -7,9 +7,13 @@ import QtQuick.Layouts
 Window {
     id: win
     visible: true
+    title: "Kiro Keybindings"
     width: 1440
     height: 820
-    flags: Qt.FramelessWindowHint | Qt.Dialog
+    // Full desktops (Plasma) get normal window decorations; TWMs stay frameless.
+    flags: (typeof appDecorated !== "undefined" && appDecorated)
+           ? Qt.Window
+           : (Qt.FramelessWindowHint | Qt.Dialog)
     color: win.t.bgBottom
 
     // ── Themes ──────────────────────────────────────────────────────────

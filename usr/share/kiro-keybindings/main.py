@@ -132,6 +132,8 @@ def main():
     ctx.setContextProperty("appTheme", args.theme)
     ctx.setContextProperty("appHeader", args.header)
     ctx.setContextProperty("appKeys", args.keys)
+    # Full desktops (Plasma) expect normal window decorations; TWMs want it frameless.
+    ctx.setContextProperty("appDecorated", detect_wm() == "plasma")
     ctx.setContextProperty("logoPath", QUrl.fromLocalFile(str(here / "assets" / "logo.png")).toString())
     engine.load(QUrl.fromLocalFile(str(here / "Cheatsheet.qml")))
     roots = engine.rootObjects()
