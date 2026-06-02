@@ -97,6 +97,20 @@ Window {
             accents: ["#268BD2", "#859900", "#B58900", "#6C71C4", "#2AA198", "#D33682"],
             keyPalette: { "super": "#268BD2", "ctrl": "#859900", "shift": "#B58900", "alt": "#6C71C4", "key": "#657B83" },
             accentA: "#268BD2", accentB: "#2AA198", font: ""
+        },
+        "nordlight": {
+            bgTop: "#ECEFF4", bgBottom: "#E5E9F0", cardBg: "#FFFFFF", cardBorder: "#D8DEE9",
+            title: "#2E3440", subtext: "#4C566A", desc: "#3B4252", plus: "#9AA5B5",
+            accents: ["#5E81AC", "#7E9B63", "#B08B3E", "#9A6A8E", "#4C7E8E", "#BF616A"],
+            keyPalette: { "super": "#5E81AC", "ctrl": "#7E9B63", "shift": "#B08B3E", "alt": "#9A6A8E", "key": "#4C566A" },
+            accentA: "#5E81AC", accentB: "#4C7E8E", font: ""
+        },
+        "draculalight": {
+            bgTop: "#FBF8F1", bgBottom: "#F2ECDD", cardBg: "#FFFFFF", cardBorder: "#E6DEC9",
+            title: "#22212C", subtext: "#7A7560", desc: "#34324A", plus: "#A89F86",
+            accents: ["#644AC9", "#14710A", "#A34D14", "#A3144D", "#036A96", "#CB3A2A"],
+            keyPalette: { "super": "#644AC9", "ctrl": "#14710A", "shift": "#A34D14", "alt": "#A3144D", "key": "#6C6650" },
+            accentA: "#644AC9", accentB: "#A3144D", font: ""
         }
     })
     // swatch lists per mode (label + swatch color); the toggle switches which list shows
@@ -112,8 +126,10 @@ Window {
     readonly property var lightThemes: [
         { key: "kirolight", label: "Kiro Light", color: "#0276D6" },
         { key: "arclight", label: "Arc-Light", color: "#5294E2" },
-        { key: "catppuccinlatte", label: "Catppuccin Latte", color: "#1E66F5" },
+        { key: "nordlight", label: "Nord Light", color: "#5E81AC" },
+        { key: "draculalight", label: "Dracula Light", color: "#644AC9" },
         { key: "gruvboxlight", label: "Gruvbox Light", color: "#B57614" },
+        { key: "catppuccinlatte", label: "Catppuccin Latte", color: "#1E66F5" },
         { key: "solarizedlight", label: "Solarized Light", color: "#268BD2" }
     ]
     readonly property var activeThemeList: appSettings.mode === "dark" ? win.darkThemes : win.lightThemes

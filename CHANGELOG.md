@@ -22,9 +22,10 @@ All notable changes to **kiro-keybindings** are documented here.
   `/usr/share/kiro-keybindings/<wm>.keybindings.txt` (read-only, package-owned — can't drift, no skell).
   **No auto global keybinding is shipped for Plasma** — see the research note below; deferred to a
   future kiro-plasma spin.
-- **Light themes + dark/light toggle.** Added five light themes (Kiro Light, Arc-Light, Catppuccin
-  Latte, Gruvbox Light, Solarized Light) alongside the seven dark ones. A monochrome ☾/☀ toggle in
-  the header flips the swatch row between the dark and light lists; the choice persists *per mode*
+- **Light themes + dark/light toggle.** Added seven light themes (Kiro Light, Arc-Light, Nord Light,
+  Dracula Light, Gruvbox Light, Catppuccin Latte, Solarized Light) to match the seven dark ones — so
+  the swatch row is the same width in both modes and the toggle stays aligned. A monochrome ☾/☀ toggle
+  in the header flips the swatch row between the dark and light lists; the choice persists *per mode*
   (`themeDark`/`themeLight`). Motivation: on a light desktop (e.g. default Plasma) the dark cheatsheet
   clashed — now it can match. Modelled on alacritty-tweak-tool's light/dark split.
 
@@ -43,9 +44,16 @@ All notable changes to **kiro-keybindings** are documented here.
   file-injection (e.g. `kwriteconfig6` at login) gets stripped — only `/etc/skel`-before-first-login
   or the kglobalaccel D-Bus API persist. Since Plasma is a not-yet-shipped spin and neither path is
   low-maintenance, the auto-keybinding is **deferred**; the app stays menu-launchable on Plasma.
+- Themes: `Cheatsheet.qml` gained the five light theme dicts, split `themeList` into `darkThemes`/
+  `lightThemes` with `activeThemeList` keyed off `appSettings.mode`, and added the ☾/☀ toggle; the
+  selected-swatch ring now uses the theme title color (a white ring was invisible on light). Fixed a
+  latent bug in `KeyCap.qml`: plain non-modifier keycaps were hardcoded to `#E2E8F0` (a dark-theme
+  grey) instead of the theme's `key` palette color — invisible on light backgrounds; now theme-driven.
 
 ### Files Modified
 - `usr/share/kiro-keybindings/main.py`
+- `usr/share/kiro-keybindings/Cheatsheet.qml` (light themes + dark/light toggle)
+- `usr/share/kiro-keybindings/KeyCap.qml` (theme-driven plain keycap color)
 - `usr/share/kiro-keybindings/sample.keybindings.txt` (new — bundled demo, ships with the package)
 - `usr/share/applications/kiro-keybindings.desktop` (new — menu entry + launch-shortcut target)
 
