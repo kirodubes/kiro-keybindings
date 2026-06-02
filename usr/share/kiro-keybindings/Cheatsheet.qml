@@ -62,10 +62,45 @@ Window {
             accents: ["#22D3EE", "#FF2BD6", "#B4FF39", "#A855F7", "#FF8A00", "#39FF14"],
             keyPalette: { "super": "#2D7CFF", "ctrl": "#39FF14", "shift": "#FFB800", "alt": "#FF2BD6", "key": "#5EEAD4" },
             accentA: "#22D3EE", accentB: "#FF2BD6", font: "monospace"
+        },
+        "kirolight": {
+            bgTop: "#F8FAFF", bgBottom: "#E9F0FB", cardBg: "#FFFFFF", cardBorder: "#E2E8F0",
+            title: "#0F172A", subtext: "#64748B", desc: "#1E293B", plus: "#94A3B8",
+            accents: ["#0276D6", "#1FA81B", "#D97706", "#9333EA", "#0891B2", "#DB2777"],
+            keyPalette: { "super": "#0276D6", "ctrl": "#1FA81B", "shift": "#D97706", "alt": "#9333EA", "key": "#475569" },
+            accentA: "#0195F7", accentB: "#2FC328", font: ""
+        },
+        "arclight": {
+            bgTop: "#FBFCFD", bgBottom: "#EFF1F3", cardBg: "#FFFFFF", cardBorder: "#DCDFE3",
+            title: "#2E3436", subtext: "#7A828E", desc: "#3B4045", plus: "#AEB4BE",
+            accents: ["#3B82C4", "#4E9A06", "#C4860B", "#9C6FB0", "#0E8C8C", "#C44C84"],
+            keyPalette: { "super": "#3B82C4", "ctrl": "#4E9A06", "shift": "#C4860B", "alt": "#9C6FB0", "key": "#5A626E" },
+            accentA: "#5294E2", accentB: "#3B82C4", font: ""
+        },
+        "catppuccinlatte": {
+            bgTop: "#EFF1F5", bgBottom: "#E6E9EF", cardBg: "#FFFFFF", cardBorder: "#CCD0DA",
+            title: "#4C4F69", subtext: "#6C6F85", desc: "#4C4F69", plus: "#9CA0B0",
+            accents: ["#1E66F5", "#40A02B", "#DF8E1D", "#8839EF", "#179299", "#EA76CB"],
+            keyPalette: { "super": "#1E66F5", "ctrl": "#40A02B", "shift": "#DF8E1D", "alt": "#8839EF", "key": "#5C5F77" },
+            accentA: "#1E66F5", accentB: "#8839EF", font: ""
+        },
+        "gruvboxlight": {
+            bgTop: "#FBF1C7", bgBottom: "#F2E5BC", cardBg: "#F9F5D7", cardBorder: "#D5C4A1",
+            title: "#3C3836", subtext: "#7C6F64", desc: "#3C3836", plus: "#A89984",
+            accents: ["#B57614", "#79740E", "#AF3A03", "#8F3F71", "#427B58", "#076678"],
+            keyPalette: { "super": "#076678", "ctrl": "#79740E", "shift": "#B57614", "alt": "#8F3F71", "key": "#665C54" },
+            accentA: "#B57614", accentB: "#AF3A03", font: ""
+        },
+        "solarizedlight": {
+            bgTop: "#FDF6E3", bgBottom: "#EEE8D5", cardBg: "#FFFEF7", cardBorder: "#E0DAC4",
+            title: "#586E75", subtext: "#93A1A1", desc: "#657B83", plus: "#A8B3AC",
+            accents: ["#268BD2", "#859900", "#B58900", "#6C71C4", "#2AA198", "#D33682"],
+            keyPalette: { "super": "#268BD2", "ctrl": "#859900", "shift": "#B58900", "alt": "#6C71C4", "key": "#657B83" },
+            accentA: "#268BD2", accentB: "#2AA198", font: ""
         }
     })
-    // order shown in the switcher (label + swatch color)
-    readonly property var themeList: [
+    // swatch lists per mode (label + swatch color); the toggle switches which list shows
+    readonly property var darkThemes: [
         { key: "kiro", label: "Kiro", color: "#0195F7" },
         { key: "arcdark", label: "Arc-Dark", color: "#5294E2" },
         { key: "nord", label: "Nord", color: "#88C0D0" },
@@ -74,10 +109,19 @@ Window {
         { key: "catppuccin", label: "Catppuccin", color: "#89B4FA" },
         { key: "neon", label: "Neon", color: "#22D3EE" }
     ]
+    readonly property var lightThemes: [
+        { key: "kirolight", label: "Kiro Light", color: "#0276D6" },
+        { key: "arclight", label: "Arc-Light", color: "#5294E2" },
+        { key: "catppuccinlatte", label: "Catppuccin Latte", color: "#1E66F5" },
+        { key: "gruvboxlight", label: "Gruvbox Light", color: "#B57614" },
+        { key: "solarizedlight", label: "Solarized Light", color: "#268BD2" }
+    ]
+    readonly property var activeThemeList: appSettings.mode === "dark" ? win.darkThemes : win.lightThemes
 
     // CLI override (used by --shot / --theme); blank → use the saved choice
     readonly property string cliTheme: (typeof appTheme !== "undefined" && appTheme) ? appTheme : ""
-    property string themeName: cliTheme !== "" ? cliTheme : appSettings.theme
+    property string themeName: cliTheme !== "" ? cliTheme
+                               : (appSettings.mode === "dark" ? appSettings.themeDark : appSettings.themeLight)
     readonly property var t: themes[themeName] !== undefined ? themes[themeName] : themes["kiro"]
 
     readonly property string headerStyle: (typeof appHeader !== "undefined" && appHeader) ? appHeader : "rule"
@@ -86,7 +130,9 @@ Window {
     Settings {
         id: appSettings
         category: "ui"
-        property string theme: "kiro"
+        property string mode: "dark"
+        property string themeDark: "kiro"
+        property string themeLight: "kirolight"
     }
 
     property int total: {
@@ -149,29 +195,64 @@ Window {
 
                 // theme switcher (hidden when a CLI theme is forced, e.g. --shot)
                 Row {
-                    spacing: 9
+                    spacing: 12
                     visible: win.cliTheme === ""
-                    Repeater {
-                        model: win.themeList
-                        delegate: Rectangle {
-                            width: 22
-                            height: 22
-                            radius: 11
-                            color: modelData.color
-                            border.width: win.themeName === modelData.key ? 2 : 0
-                            border.color: "#ffffff"
-                            scale: win.themeName === modelData.key ? 1.0 : 0.82
-                            opacity: win.themeName === modelData.key ? 1.0 : 0.7
-                            Behavior on scale { NumberAnimation { duration: 120 } }
-                            Behavior on opacity { NumberAnimation { duration: 120 } }
 
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: appSettings.theme = modelData.key
-                                ToolTip.visible: containsMouse
-                                ToolTip.text: modelData.label
+                    // dark / light mode toggle — monochrome glyph, matches the swatch row
+                    Rectangle {
+                        width: 22
+                        height: 22
+                        radius: 11
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: "transparent"
+                        border.width: 1
+                        border.color: win.t.subtext
+                        Text {
+                            anchors.centerIn: parent
+                            text: appSettings.mode === "dark" ? "☾" : "☀"
+                            color: win.t.subtext
+                            font.pixelSize: 13
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: appSettings.mode = (appSettings.mode === "dark" ? "light" : "dark")
+                            ToolTip.visible: containsMouse
+                            ToolTip.text: appSettings.mode === "dark" ? "Switch to light themes" : "Switch to dark themes"
+                        }
+                    }
+
+                    Row {
+                        spacing: 9
+                        anchors.verticalCenter: parent.verticalCenter
+                        Repeater {
+                            model: win.activeThemeList
+                            delegate: Rectangle {
+                                width: 22
+                                height: 22
+                                radius: 11
+                                color: modelData.color
+                                border.width: win.themeName === modelData.key ? 2 : 0
+                                border.color: win.t.title
+                                scale: win.themeName === modelData.key ? 1.0 : 0.82
+                                opacity: win.themeName === modelData.key ? 1.0 : 0.7
+                                Behavior on scale { NumberAnimation { duration: 120 } }
+                                Behavior on opacity { NumberAnimation { duration: 120 } }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (appSettings.mode === "dark")
+                                            appSettings.themeDark = modelData.key
+                                        else
+                                            appSettings.themeLight = modelData.key
+                                    }
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: modelData.label
+                                }
                             }
                         }
                     }

@@ -22,6 +22,11 @@ All notable changes to **kiro-keybindings** are documented here.
   `/usr/share/kiro-keybindings/<wm>.keybindings.txt` (read-only, package-owned — can't drift, no skell).
   **No auto global keybinding is shipped for Plasma** — see the research note below; deferred to a
   future kiro-plasma spin.
+- **Light themes + dark/light toggle.** Added five light themes (Kiro Light, Arc-Light, Catppuccin
+  Latte, Gruvbox Light, Solarized Light) alongside the seven dark ones. A monochrome ☾/☀ toggle in
+  the header flips the swatch row between the dark and light lists; the choice persists *per mode*
+  (`themeDark`/`themeLight`). Motivation: on a light desktop (e.g. default Plasma) the dark cheatsheet
+  clashed — now it can match. Modelled on alacritty-tweak-tool's light/dark split.
 
 ### Technical Details
 - `main.py` — added `"xfwm4": "xfce4"` and `"kwin_wayland"/"kwin_x11": "plasma"` to `WM_MAP`.

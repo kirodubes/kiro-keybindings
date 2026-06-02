@@ -54,7 +54,7 @@ Item {
         id: txt
         anchors.centerIn: parent
         text: label
-        color: plain ? (isMod ? base : "#E2E8F0") : "white"
+        color: plain ? base : "white"
         font.pixelSize: 13
         font.bold: true
         font.family: capStyle === "mono"
