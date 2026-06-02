@@ -24,6 +24,8 @@ WM_MAP = {
     "awesome": "awesome",
     "leftwm": "leftwm",
     "xfwm4": "xfce4",
+    "kwin_wayland": "plasma",
+    "kwin_x11": "plasma",
 }
 
 
@@ -46,9 +48,12 @@ def resolve_file(explicit, dev=False):
         return Path(__file__).resolve().parent / "sample.keybindings.txt"
     wm = detect_wm()
     if wm:
-        candidate = Path.home() / ".config" / wm / "keybindings.txt"
-        if candidate.exists():
-            return candidate
+        user = Path.home() / ".config" / wm / "keybindings.txt"
+        if user.exists():
+            return user
+        bundled = Path(__file__).resolve().parent / f"{wm}.keybindings.txt"
+        if bundled.exists():
+            return bundled
     return None
 
 

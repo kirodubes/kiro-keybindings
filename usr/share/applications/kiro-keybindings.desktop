@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Kiro Keybindings
+Comment=Searchable keyboard-shortcut cheatsheet for your desktop
+Exec=kiro-keybindings
+Icon=preferences-desktop-keyboard
+Terminal=false
+Categories=Utility;
+Keywords=keybindings;shortcuts;keys;cheatsheet;hotkeys;

@@ -9,14 +9,35 @@ All notable changes to **kiro-keybindings** are documented here.
   opens `~/.config/xfce4/keybindings.txt` — the file (and the Ctrl+Super+S launch binding) were
   already shipped in `kiro-xfce`, but the app couldn't find them because its WM table was TWM-only.
   XFCE is a shipped Kiro default, so it now gets the same one-keystroke cheatsheet as the 7 TWMs.
+- **`--dev` flag + bundled sample.** `kiro-keybindings --dev` loads a bundled
+  `sample.keybindings.txt` (forced, overriding detection — below `--file`), so the app launches on
+  *any* box with no generated file and no matching WM. Useful for development, theme work, `--shot`
+  gallery renders, and testing on environments the app doesn't yet detect (e.g. a Wayland session).
+  The window chip reads `sample (dev)`.
+- **Plasma (KDE) support — verified on a real Plasma Wayland VM.** App detects `kwin_wayland`/
+  `kwin_x11` → `plasma`, and runs natively on Wayland (confirmed visually). Ships a
+  `kiro-keybindings.desktop` so it appears in the application menu and can be bound as a launch
+  shortcut; the Super+K binding itself ships via `kiro-plasma-keybindings`. Resilient data-file
+  lookup: per-user `~/.config/<wm>/keybindings.txt` first, else a bundled
+  `/usr/share/kiro-keybindings/<wm>.keybindings.txt` (read-only, package-owned — can't drift, no skell).
 
 ### Technical Details
-- `main.py` — added `"xfwm4": "xfce4"` to `WM_MAP`. `detect_wm()` matches the running `xfwm4`
-  process via `pgrep -x` and resolves `~/.config/xfce4/keybindings.txt`. Parser/QML unchanged
-  (the `keybindings.txt` format is identical across environments).
+- `main.py` — added `"xfwm4": "xfce4"` and `"kwin_wayland"/"kwin_x11": "plasma"` to `WM_MAP`.
+  `detect_wm()` matches the running process via `pgrep -x`. Parser/QML unchanged (the
+  `keybindings.txt` format is identical across environments).
+- `main.py` — `--dev` resolves to the bundled sample *before* `detect_wm()` (so it works even when a
+  real WM is detected); `resolve_file()` gained a `dev` param + a `/usr/share` bundled fallback after
+  the per-user path; the not-found message now hints at `--dev`.
+- Plasma launch shortcut research (verified on the VM): KDE needs the triple format
+  `_launch=KEY,KEY,Name` in `kglobalshortcutsrc` (single-value registers the action but binds no
+  key); the key must avoid Plasma defaults (Super+Ctrl+S is taken by "Toggle stylus mode" — Super+K
+  is free); on Wayland `kwin` *is* the shortcut daemon, reads the file at session start, and strips
+  live edits on logout (so `/etc/skel` first-login delivery is the safe path).
 
 ### Files Modified
 - `usr/share/kiro-keybindings/main.py`
+- `usr/share/kiro-keybindings/sample.keybindings.txt` (new — bundled demo, ships with the package)
+- `usr/share/applications/kiro-keybindings.desktop` (new — menu entry + launch-shortcut target)
 
 ## 2026.06.01
 
