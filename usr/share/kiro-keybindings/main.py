@@ -81,6 +81,9 @@ class Backend(QObject):
             return self._all
         out = []
         for section in self._all:
+            if self._filter in section["name"].lower():
+                out.append(section)
+                continue
             rows = [
                 b for b in section["bindings"]
                 if self._filter in b["combo"].lower() or self._filter in b["desc"].lower()

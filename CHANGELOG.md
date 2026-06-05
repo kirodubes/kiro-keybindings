@@ -2,6 +2,22 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.06.05
+
+### What Changed
+- **Search now matches category names too.** Previously the live filter only searched each binding's
+  key combo and description, so typing a section name (e.g. `workspaces`) returned nothing. Now a
+  filter that matches a section's name shows that whole section; otherwise it falls back to the
+  per-binding combo/description match as before. Case-insensitive substring, so `work` or `multimon`
+  also hit their categories.
+
+### Technical Details
+- `main.py` — in `Backend.sections`, short-circuit on `self._filter in section["name"].lower()` to
+  emit the full section before falling through to the per-binding row filter.
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.06.02
 
 ### What Changed
@@ -16,8 +32,9 @@ All notable changes to **kiro-keybindings** are documented here.
   The window chip reads `sample (dev)`.
 - **Plasma (KDE) support scaffolding — verified on a real Plasma Wayland VM.** App detects
   `kwin_wayland`/`kwin_x11` → `plasma` and runs natively on Wayland (confirmed visually). Ships a
-  generic `kiro-keybindings.desktop` so it appears in every desktop's application menu (and can be
-  bound as a launch shortcut by the user). Resilient data-file lookup: per-user
+  generic `kiro-keybindings.desktop` so it appears in TWM/XFCE application menus (hidden on Plasma via
+  `NotShowIn=KDE` until a `plasma.keybindings.txt` ships — otherwise it's a dead launcher there).
+  Resilient data-file lookup: per-user
   `~/.config/<wm>/keybindings.txt` first, else a bundled
   `/usr/share/kiro-keybindings/<wm>.keybindings.txt` (read-only, package-owned — can't drift, no skell).
   **No auto global keybinding is shipped for Plasma** — see the research note below; deferred to a
@@ -28,6 +45,10 @@ All notable changes to **kiro-keybindings** are documented here.
   in the header flips the swatch row between the dark and light lists; the choice persists *per mode*
   (`themeDark`/`themeLight`). Motivation: on a light desktop (e.g. default Plasma) the dark cheatsheet
   clashed — now it can match. Modelled on alacritty-tweak-tool's light/dark split.
+- **Window decorations per environment.** Frameless on TWMs (correct — they manage their own
+  decorations), but a normal **decorated, titled window on Plasma** ("Kiro Keybindings" title + real
+  min/max/close + border). A frameless panel on a full desktop read as broken, and KWin was
+  half-decorating it inconsistently; requesting proper decorations fixes it. Verified on the VM.
 
 ### Technical Details
 - `main.py` — added `"xfwm4": "xfce4"` and `"kwin_wayland"/"kwin_x11": "plasma"` to `WM_MAP`.
@@ -44,11 +65,14 @@ All notable changes to **kiro-keybindings** are documented here.
   file-injection (e.g. `kwriteconfig6` at login) gets stripped — only `/etc/skel`-before-first-login
   or the kglobalaccel D-Bus API persist. Since Plasma is a not-yet-shipped spin and neither path is
   low-maintenance, the auto-keybinding is **deferred**; the app stays menu-launchable on Plasma.
-- Themes: `Cheatsheet.qml` gained the five light theme dicts, split `themeList` into `darkThemes`/
+- Themes: `Cheatsheet.qml` gained the seven light theme dicts, split `themeList` into `darkThemes`/
   `lightThemes` with `activeThemeList` keyed off `appSettings.mode`, and added the ☾/☀ toggle; the
   selected-swatch ring now uses the theme title color (a white ring was invisible on light). Fixed a
   latent bug in `KeyCap.qml`: plain non-modifier keycaps were hardcoded to `#E2E8F0` (a dark-theme
   grey) instead of the theme's `key` palette color — invisible on light backgrounds; now theme-driven.
+- Decorations: `main.py` exposes `appDecorated = detect_wm() == "plasma"`; `Cheatsheet.qml` selects
+  `Qt.Window` when set, else `Qt.FramelessWindowHint | Qt.Dialog`, and now sets the window `title`.
+  The `.desktop` gained `NotShowIn=KDE`.
 
 ### Files Modified
 - `usr/share/kiro-keybindings/main.py`
