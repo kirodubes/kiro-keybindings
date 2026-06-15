@@ -2,6 +2,20 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.06.15
+
+### What Changed
+- **Localized the desktop entry.** Added a translated `Comment` and a new `GenericName`
+  ("Keyboard Shortcut Reference") in 14 languages (de, fr, nl, es, it, pt_BR, pt, ru, pl, uk,
+  zh_CN, ja, tr, cs). Brand `Name` and technical `Keywords` stay English.
+
+### Technical Details
+- `usr/share/applications/kiro-keybindings.desktop` — `GenericName=` + `GenericName[xx]=` block
+  after `Name=`; `Comment[xx]=` block after `Comment=`. `desktop-file-validate` clean.
+
+### Files Modified
+- `usr/share/applications/kiro-keybindings.desktop`
+
 ## 2026.06.05
 
 ### What Changed
