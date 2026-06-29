@@ -2,6 +2,23 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.06.29
+
+### What Changed
+- **Hyprland is now detected.** Pressing the keybindings launcher under Hyprland reported "no
+  keybindings.txt found for this environment" because the WM auto-detection table had no Hyprland
+  entry — so it fell through to None even though `~/.config/hypr/keybindings.txt` ships with
+  kiro-hyprland. Added the mapping; the cheatsheet now opens on Hyprland boxes.
+
+### Technical Details
+- `main.py` `WM_MAP` — added `"Hyprland": "hypr"`. The compositor's process name is `Hyprland`
+  (capital H), matched by the existing `pgrep -x` pass; config dir is `hypr`. `XDG_CURRENT_DESKTOP`
+  is empty under Hyprland, so the env fallback can't help — process detection is the load-bearing
+  path. Verified live on the Hyprland box: `detect_wm()` returns `hypr` and resolves the real file.
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.06.15
 
 ### What Changed

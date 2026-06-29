@@ -24,6 +24,7 @@ WM_MAP = {
     "awesome": "awesome",
     "leftwm": "leftwm",
     "xfwm4": "xfce4",
+    "Hyprland": "hypr",
     "kwin_wayland": "plasma",
     "kwin_x11": "plasma",
 }
