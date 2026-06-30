@@ -85,8 +85,7 @@ def resolve_file(explicit, dev=False):
         "...but no keybindings.txt was found for it. Looked in:",
         f"      {user}",
         f"      {bundled}",
-        f"The '{wm}' package has not shipped a keybindings.txt yet "
-        "(generate it with /kiro-keybindings-all).",
+        f"The '{wm}' package has not shipped a keybindings.txt yet.",
     ]
 
 

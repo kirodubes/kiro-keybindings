@@ -65,6 +65,28 @@ All notable changes to **kiro-keybindings** are documented here.
 - `usr/share/kiro-keybindings/main.py`
 - `usr/share/applications/kiro-keybindings.desktop`
 
+### Launch-failure popup: enumerate *why* the cheatsheet didn't open
+
+#### What Changed
+- **A GUI popup now explains a failed launch instead of dying silently.** When started from a
+  global shortcut or `.desktop`, the app's old `stderr` "no keybindings.txt found" message was
+  invisible — the app just appeared broken. It now shows a `QMessageBox` listing the concrete
+  cause(s): when **no WM is detected** it prints the live `XDG_CURRENT_DESKTOP`/`XDG_SESSION_TYPE`,
+  the full list of known compositors it probed, and a hint to add the new env to `WM_MAP`; when a
+  WM **is** detected but has no data it names the environment and the exact paths it checked. This
+  is aimed squarely at the Wayland TWMs still to be wired — launching the app on a not-yet-supported
+  compositor now tells you exactly what's missing.
+
+#### Technical Details
+- `main.py` — `resolve_file()` now returns `(path, reasons)`; `reasons` is a list of human-readable
+  failure lines built per case (bad `--file`, undetected WM, detected-but-no-file). New
+  `show_launch_error(reasons)` pops a `QtWidgets.QMessageBox` (lazy-imported so the success path
+  stays on `QGuiApplication`), falling back to `stderr` on a headless box. Verified: enumerated
+  reasons for all three cases; `--dev` success path still renders; ruff clean.
+
+#### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.06.29
 
 ### What Changed
