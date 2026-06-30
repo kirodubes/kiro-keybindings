@@ -5,6 +5,7 @@ import argparse
 import os
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, QTimer, QUrl, Signal, Slot
@@ -12,6 +13,7 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuick import QQuickWindow
 
+import exporter
 from parser import parse
 
 # Running WM process name (pgrep -x) → ~/.config/<dir>/keybindings.txt
@@ -60,13 +62,18 @@ def resolve_file(explicit, dev=False):
 
 class Backend(QObject):
     modelChanged = Signal()
+    busyChanged = Signal()
+    # (ok, fmt, path-or-message) — fired on the GUI thread when an export finishes.
+    exportFinished = Signal(bool, str, str)
 
-    def __init__(self, sections, title, wm):
+    def __init__(self, sections, title, wm, source_path):
         super().__init__()
         self._all = sections
         self._title = title
         self._wm = wm
+        self._source = source_path
         self._filter = ""
+        self._busy = False
 
     @Property(str, constant=True)
     def title(self):
@@ -75,6 +82,34 @@ class Backend(QObject):
     @Property(str, constant=True)
     def wm(self):
         return self._wm
+
+    @Property(bool, notify=busyChanged)
+    def exportBusy(self):
+        return self._busy
+
+    def _set_busy(self, value):
+        if self._busy != value:
+            self._busy = value
+            self.busyChanged.emit()
+
+    @Slot(str)
+    def export(self, fmt):
+        """Render the live keybindings.txt to HTML/PDF in a daemon thread, then open it."""
+        if self._busy:
+            return
+        self._set_busy(True)
+        threading.Thread(target=self._export_worker, args=(fmt,), daemon=True).start()
+
+    def _export_worker(self, fmt):
+        try:
+            out = exporter.export(self._source, fmt)
+            subprocess.Popen(["xdg-open", str(out)],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            ok, payload = True, str(out)
+        except Exception as e:
+            ok, payload = False, str(e)
+        self._set_busy(False)
+        self.exportFinished.emit(ok, fmt, payload)
 
     @Property("QVariantList", notify=modelChanged)
     def sections(self):
@@ -127,7 +162,7 @@ def main():
     app = QGuiApplication(sys.argv)
     app.setOrganizationName("kiro")
     app.setApplicationName("kiro-keybindings")
-    backend = Backend(sections, args.title or title or "Keybindings", wm)
+    backend = Backend(sections, args.title or title or "Keybindings", wm, str(path))
 
     here = Path(__file__).resolve().parent
     engine = QQmlApplicationEngine()
@@ -138,6 +173,7 @@ def main():
     ctx.setContextProperty("appKeys", args.keys)
     # Full desktops (Plasma) expect normal window decorations; TWMs want it frameless.
     ctx.setContextProperty("appDecorated", detect_wm() == "plasma")
+    ctx.setContextProperty("appShot", bool(args.shot))
     ctx.setContextProperty("logoPath", QUrl.fromLocalFile(str(here / "assets" / "logo.png")).toString())
     engine.load(QUrl.fromLocalFile(str(here / "Cheatsheet.qml")))
     roots = engine.rootObjects()

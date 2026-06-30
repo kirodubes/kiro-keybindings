@@ -213,6 +213,53 @@ Window {
 
                 Item { Layout.fillWidth: true }
 
+                // export buttons — regenerate HTML / PDF from the live keybindings.txt
+                // (hidden during --shot so screenshots stay clean)
+                Row {
+                    spacing: 8
+                    visible: typeof appShot === "undefined" || !appShot
+                    anchors.verticalCenter: parent.verticalCenter
+                    Repeater {
+                        model: [
+                            { label: "HTML", fmt: "html", tip: "Save an HTML cheatsheet next to keybindings.txt and open it" },
+                            { label: "PDF", fmt: "pdf", tip: "Save a printable PDF next to keybindings.txt and open it" }
+                        ]
+                        delegate: Rectangle {
+                            height: 26
+                            width: pillText.implicitWidth + 22
+                            radius: 13
+                            color: "transparent"
+                            border.width: 1
+                            border.color: pillArea.containsMouse ? win.t.accentA : win.t.subtext
+                            opacity: backend.exportBusy ? 0.45 : 1.0
+                            Text {
+                                id: pillText
+                                anchors.centerIn: parent
+                                text: modelData.label
+                                color: pillArea.containsMouse ? win.t.accentA : win.t.subtext
+                                font.pixelSize: 12
+                                font.bold: true
+                                font.family: win.t.font !== "" ? win.t.font : font.family
+                            }
+                            MouseArea {
+                                id: pillArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                enabled: !backend.exportBusy
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    toast.ok = true
+                                    toast.message = "Generating " + modelData.label + "…"
+                                    toastTimer.stop()
+                                    backend.export(modelData.fmt)
+                                }
+                                ToolTip.visible: containsMouse
+                                ToolTip.text: modelData.tip
+                            }
+                        }
+                    }
+                }
+
                 // theme switcher (hidden when a CLI theme is forced, e.g. --shot)
                 Row {
                     spacing: 12
@@ -474,6 +521,45 @@ Window {
                     font.pixelSize: 12
                     font.family: win.t.font !== "" ? win.t.font : font.family
                 }
+            }
+        }
+
+        // ── Export toast ────────────────────────────────────────────────
+        Rectangle {
+            id: toast
+            property string message: ""
+            property bool ok: true
+            visible: message !== ""
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 28
+            height: 40
+            width: toastText.implicitWidth + 36
+            radius: 20
+            color: win.t.cardBg
+            border.width: 1
+            border.color: toast.ok ? win.t.accentB : "#EF4444"
+            Text {
+                id: toastText
+                anchors.centerIn: parent
+                text: toast.message
+                color: win.t.desc
+                font.pixelSize: 13
+                font.family: win.t.font !== "" ? win.t.font : font.family
+            }
+            Timer {
+                id: toastTimer
+                interval: 4500
+                onTriggered: toast.message = ""
+            }
+        }
+
+        Connections {
+            target: backend
+            function onExportFinished(ok, fmt, payload) {
+                toast.ok = ok
+                toast.message = ok ? ("Saved " + payload) : ("Export failed: " + payload)
+                toastTimer.restart()
             }
         }
     }

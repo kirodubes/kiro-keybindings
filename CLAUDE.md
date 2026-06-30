@@ -8,6 +8,9 @@ files (made by `/kiro-create-keybindings`) are the source of truth.
 - `usr/bin/kiro-keybindings` — launcher (execs the Python entry).
 - `usr/share/kiro-keybindings/main.py` — WM detection, `Backend` QObject, QML engine.
 - `usr/share/kiro-keybindings/parser.py` — keybindings.txt → sections.
+- `usr/share/kiro-keybindings/exporter.py` — canonical keybindings.txt → HTML/PDF transform
+  (`export()`); used by the in-app HTML/PDF buttons and by the `~/.bin/kiro-keybindings-html.py`
+  CLI shim. Edit the template here, nowhere else.
 - `usr/share/kiro-keybindings/*.qml` — UI (Cheatsheet root, BindingRow, KeyCap).
 - `usr/share/kiro-keybindings/assets/logo.png` — Kiro brand logo (do not recolor).
 
@@ -18,5 +21,7 @@ files (made by `/kiro-create-keybindings`) are the source of truth.
 
 ## Status
 v1 wired into ohmychadwm; app also detects XFCE (`xfwm4` → `~/.config/xfce4/keybindings.txt`, launch
-on Ctrl+Super+S, both shipped via kiro-xfce). Phase 2 remaining: wire the other 6 TWMs' launch
-entries, nemesis_repo package (`pyside6` dep) so it actually ships + updates on installed systems.
+on Ctrl+Super+S, both shipped via kiro-xfce). In-app HTML/PDF export landed (header pills →
+`exporter.py`). Phase 2 remaining: wire the other 6 TWMs' launch entries, nemesis_repo package
+(`pyside6` dep, plus a chromium/brave **optdepend** for the PDF button) so it actually ships +
+updates on installed systems.

@@ -2,6 +2,47 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.06.30
+
+### What Changed
+- **Export the cheatsheet to HTML / PDF from inside the app.** Added two pill buttons (**HTML**,
+  **PDF**) to the header. Each regenerates that format from the *currently displayed*
+  `keybindings.txt`, writes it next to the source file, and opens it. Previously the HTML/PDF
+  were only ever produced out-of-band by `/kiro-keybindings-all-twms-xfce`, so they went stale
+  the moment a binding changed — now the user can regenerate a fresh copy on demand.
+- **One source of truth for the render logic.** The HTML template + headless-Chromium PDF
+  rendering now live in the shipped app (`exporter.py`). The local `~/.bin/kiro-keybindings-html.py`
+  was reduced to a thin shim that imports it, so the template and PDF code can no longer drift
+  between the GUI and the batch generator.
+
+### Technical Details
+- New `usr/share/kiro-keybindings/exporter.py` — ported from `~/.bin/kiro-keybindings-html.py`.
+  Public entry `export(txt_path, fmt, out_dir=None) -> Path` (`fmt` ∈ `html`/`pdf`; pdf renders
+  the HTML first then prints it). Writes next to the source txt, falling back to `~/` when that
+  dir is read-only (bundled/`--dev` case). Two improvements over the original: the logo is read
+  live from `assets/logo.png` and base64-embedded (no more hard-coded data-URI blob that could
+  drift from the app logo), and `vivaldi`/`vivaldi-stable` were added to the browser probe list
+  (Kiro ships Vivaldi).
+- `main.py` — `Backend` now takes the resolved source path; added `exportFinished(bool,str,str)`
+  signal, `exportBusy` property, and an `export(fmt)` slot that runs the render in a **daemon
+  thread** (house rule: never run a subprocess from a GUI callback) then `xdg-open`s the result.
+  New `appShot` context property hides the export UI during `--shot`.
+- `Cheatsheet.qml` — two header pills via a `Repeater`, styled like the existing mode toggle;
+  disabled + dimmed while `exportBusy`; a bottom toast (wired to `exportFinished`) shows
+  "Generating…" then the saved path or the error, auto-clearing after 4.5 s. Hidden when `appShot`.
+- `~/.bin/kiro-keybindings-html.py` — now a shim that adds the dev app dir to `sys.path` and
+  calls `exporter._cli()`; `kiro-keybindings-all.sh` and `/kiro-keybindings-all-twms-xfce` keep
+  working unchanged.
+- Verified: shim produces valid HTML (logo embedded) + PDF (`%PDF`, 724 KB) from a real
+  `keybindings.txt`; QML loads clean offscreen; both pills render in a live windowed run.
+
+### Files Modified
+- `usr/share/kiro-keybindings/exporter.py` (new)
+- `usr/share/kiro-keybindings/main.py`
+- `usr/share/kiro-keybindings/Cheatsheet.qml`
+- `~/.bin/kiro-keybindings-html.py` (→ shim, outside this repo)
+- `CLAUDE.md`
+
 ## 2026.06.29
 
 ### What Changed
