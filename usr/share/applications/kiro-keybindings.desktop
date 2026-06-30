@@ -36,6 +36,3 @@ Icon=preferences-desktop-keyboard
 Terminal=false
 Categories=Utility;
 Keywords=keybindings;shortcuts;keys;cheatsheet;hotkeys;
-# Hidden on KDE/Plasma until the kiro-plasma spin ships a plasma.keybindings.txt;
-# without it the app exits "no keybindings found", so don't surface a dead launcher there.
-NotShowIn=KDE;

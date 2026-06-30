@@ -45,19 +45,69 @@ def detect_wm():
 
 
 def resolve_file(explicit, dev=False):
+    """Return (path, reasons). path is None when nothing resolves; reasons is a list of
+    human-readable lines explaining the failure (for the launch-failure popup)."""
     if explicit:
-        return Path(explicit).expanduser()
+        p = Path(explicit).expanduser()
+        if p.exists():
+            return p, []
+        return None, [f"The file passed with --file does not exist:\n      {p}"]
     if dev:
-        return Path(__file__).resolve().parent / "sample.keybindings.txt"
+        return Path(__file__).resolve().parent / "sample.keybindings.txt", []
+
     wm = detect_wm()
-    if wm:
+    if not wm:
+        env = os.environ.get("XDG_CURRENT_DESKTOP") or os.environ.get("DESKTOP_SESSION") or "(unset)"
+        stype = os.environ.get("XDG_SESSION_TYPE") or "(unset)"
+        return None, [
+            "Could not detect a supported desktop or window manager.",
+            f"Running session: XDG_CURRENT_DESKTOP={env}, XDG_SESSION_TYPE={stype}",
+            "None of the known compositors were running (pgrep) and the session name "
+            "matched no known environment:",
+            "      " + ", ".join(WM_MAP),
+            "If this is a new Kiro environment, add its process name to WM_MAP in main.py "
+            "and ship a keybindings.txt for it.",
+        ]
+
+    # Plasma is a full desktop, not a TWM: its cheatsheet sits at the .config root
+    # (no <wm> subdir), matching where kiro-plasma-keybindings ships it via skel.
+    if wm == "plasma":
+        user = Path.home() / ".config" / "keybindings.txt"
+    else:
         user = Path.home() / ".config" / wm / "keybindings.txt"
-        if user.exists():
-            return user
-        bundled = Path(__file__).resolve().parent / f"{wm}.keybindings.txt"
-        if bundled.exists():
-            return bundled
-    return None
+    if user.exists():
+        return user, []
+    bundled = Path(__file__).resolve().parent / f"{wm}.keybindings.txt"
+    if bundled.exists():
+        return bundled, []
+    return None, [
+        f"Detected environment: {wm}",
+        "...but no keybindings.txt was found for it. Looked in:",
+        f"      {user}",
+        f"      {bundled}",
+        f"The '{wm}' package has not shipped a keybindings.txt yet "
+        "(generate it with /kiro-keybindings-all).",
+    ]
+
+
+def show_launch_error(reasons):
+    """Pop a GUI dialog listing why the cheatsheet could not launch; fall back to stderr.
+
+    GUI launchers (.desktop / global shortcut) swallow stderr, so a silent exit looks like
+    the app is simply broken. A popup makes the cause visible on any not-yet-wired environment.
+    """
+    body = "\n".join(f"• {r}" for r in reasons) if reasons else "Unknown reason."
+    try:
+        from PySide6.QtWidgets import QApplication, QMessageBox
+        app = QApplication.instance() or QApplication(sys.argv)  # noqa: F841 (kept alive for exec)
+        box = QMessageBox()
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Kiro Keybindings")
+        box.setText("The keybindings cheatsheet could not open.")
+        box.setInformativeText(body)
+        box.exec()
+    except Exception:
+        print("kiro-keybindings: could not open cheatsheet:\n" + body, file=sys.stderr)
 
 
 class Backend(QObject):
@@ -146,10 +196,11 @@ def main():
     ap.add_argument("--shot", help="render the window to this PNG (offscreen) and exit")
     args = ap.parse_args()
 
-    path = resolve_file(args.file, args.dev)
+    path, reasons = resolve_file(args.file, args.dev)
     if not path or not path.exists():
-        print("kiro-keybindings: no keybindings.txt found for this environment "
-              "(try --dev for the bundled sample)", file=sys.stderr)
+        if not reasons:
+            reasons = ["No keybindings.txt found for this environment (try --dev for the sample)."]
+        show_launch_error(reasons)
         return 1
 
     title, sections = parse(str(path))

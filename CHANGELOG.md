@@ -43,6 +43,28 @@ All notable changes to **kiro-keybindings** are documented here.
 - `~/.bin/kiro-keybindings-html.py` (→ shim, outside this repo)
 - `CLAUDE.md`
 
+### Plasma support: fix the data path + unhide the launcher
+
+#### What Changed
+- **The cheatsheet now works on KDE Plasma.** `detect_wm()` already mapped `kwin_wayland`/`kwin_x11`
+  to `plasma`, but `resolve_file()` then looked for `~/.config/plasma/keybindings.txt` (TWM-style
+  `<wm>` subdir) while kiro-plasma-keybindings ships the file at the `.config` **root**
+  (`~/.config/keybindings.txt`) — so the app never found it and exited "no keybindings found".
+  Special-cased Plasma to read the root path.
+- **Unhid the launcher on Plasma.** The app's `.desktop` carried `NotShowIn=KDE` (a deliberate
+  guard while no Plasma data shipped). Now that the path resolves to a real, fully-populated
+  `keybindings.txt`, the launcher is surfaced on Plasma too.
+
+#### Technical Details
+- `main.py` — `resolve_file()` branches on `wm == "plasma"` to build `~/.config/keybindings.txt`
+  (no `<wm>` subdir); all TWMs keep the `~/.config/<wm>/keybindings.txt` path. The existing bundled
+  fallback (`<share>/plasma.keybindings.txt`) is untouched.
+- `kiro-keybindings.desktop` — removed the `NotShowIn=KDE;` line and its now-stale comment.
+
+#### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+- `usr/share/applications/kiro-keybindings.desktop`
+
 ## 2026.06.29
 
 ### What Changed
