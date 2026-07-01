@@ -27,6 +27,10 @@ WM_MAP = {
     "leftwm": "leftwm",
     "xfwm4": "xfce4",
     "Hyprland": "hypr",
+    # kiro-niri (noctalia-shell) and kiro-ohmyniri (waybar/mako) both run the same
+    # "niri" process and ship to the same ~/.config/niri/keybindings.txt — one
+    # entry covers both editions.
+    "niri": "niri",
     "kwin_wayland": "plasma",
     "kwin_x11": "plasma",
 }

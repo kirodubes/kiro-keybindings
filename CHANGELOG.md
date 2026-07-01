@@ -2,6 +2,18 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.07.01
+
+### What Changed
+- **Added niri to `WM_MAP`.** `kiro-niri` and `kiro-ohmyniri` both shipped a
+  `~/.config/niri/keybindings.txt`, but the app had no `niri` entry at all — `Super+Ctrl+S` on
+  either edition showed "Could not detect a supported desktop or window manager" instead of the
+  cheatsheet. One `"niri": "niri"` entry covers both: same process name, same config path,
+  regardless of which edition's shell (noctalia vs waybar) is running underneath.
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.06.30
 
 ### What Changed
