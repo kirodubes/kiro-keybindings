@@ -31,6 +31,16 @@ WM_MAP = {
     # "niri" process and ship to the same ~/.config/niri/keybindings.txt — one
     # entry covers both editions.
     "niri": "niri",
+    "wayfire": "wayfire",
+    # kiro-sway ships swayfx (eye-candy sway fork); its package installs the
+    # binary as "sway" (Provides=sway), so the process name is unchanged.
+    "sway": "sway",
+    "river": "river",
+    "labwc": "labwc",
+    "dwl": "dwl",
+    # kiro-mango's compositor package is "mangowm" (upstream project "mangowc"),
+    # but the installed binary is "mango" (config lives at ~/.config/mango/).
+    "mango": "mango",
     "kwin_wayland": "plasma",
     "kwin_x11": "plasma",
 }

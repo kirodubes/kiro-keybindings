@@ -10,6 +10,12 @@ All notable changes to **kiro-keybindings** are documented here.
   either edition showed "Could not detect a supported desktop or window manager" instead of the
   cheatsheet. One `"niri": "niri"` entry covers both: same process name, same config path,
   regardless of which edition's shell (noctalia vs waybar) is running underneath.
+- **Added the other six KIROTUX Wayland editions to `WM_MAP`:** wayfire, sway, river, labwc,
+  dwl, mango. Same gap as niri — every one of them already ships a `keybindings.txt`, but none
+  were detectable. Verified the actual installed binary names via `pacman -Fl` before wiring
+  them: `kiro-sway` ships **swayfx**, whose package installs the binary as `sway` (not
+  `swayfx`); `kiro-mango`'s package is `mangowm` (upstream `mangowc`), but the binary is `mango`.
+  All seven KIROTUX `keybindings.txt` files parse cleanly with `parser.parse()`.
 
 ### Files Modified
 - `usr/share/kiro-keybindings/main.py`
