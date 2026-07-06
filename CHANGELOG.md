@@ -2,6 +2,18 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.07.06
+
+### What Changed
+- **Added `scroll` and `miracle-wm` to `WM_MAP`.** Both KIROTUX editions already ship a
+  `keybindings.txt` but were undetectable. `kiro-scroll` ships **scroll** (PaperWM-style sway
+  fork, AUR `sway-scroll`); the installed binary is `scroll` and hardcodes `~/.config/scroll/`.
+  `kiro-miracle` is the odd one out — a **Mir-based** tiler (AUR `miracle-wm-git`, vendored into
+  `nemesis_repo`); binary and config dir are both `miracle-wm`.
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.07.01
 
 ### What Changed

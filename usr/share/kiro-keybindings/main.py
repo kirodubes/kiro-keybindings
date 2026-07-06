@@ -35,12 +35,18 @@ WM_MAP = {
     # kiro-sway ships swayfx (eye-candy sway fork); its package installs the
     # binary as "sway" (Provides=sway), so the process name is unchanged.
     "sway": "sway",
+    # kiro-scroll ships scroll (PaperWM-style sway fork, AUR "sway-scroll"); the
+    # installed binary is "scroll" and hardcodes ~/.config/scroll/.
+    "scroll": "scroll",
     "river": "river",
     "labwc": "labwc",
     "dwl": "dwl",
     # kiro-mango's compositor package is "mangowm" (upstream project "mangowc"),
     # but the installed binary is "mango" (config lives at ~/.config/mango/).
     "mango": "mango",
+    # kiro-miracle is the odd one out — a Mir-based tiler (AUR "miracle-wm-git",
+    # vendored into nemesis_repo); binary and config dir are both "miracle-wm".
+    "miracle-wm": "miracle-wm",
     "kwin_wayland": "plasma",
     "kwin_x11": "plasma",
 }
