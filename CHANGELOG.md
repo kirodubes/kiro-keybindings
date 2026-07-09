@@ -2,6 +2,29 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.07.09
+
+### What Changed
+- **Per-edition Hyprland detection.** All four Kiro Hyprland editions
+  (`kiro-hyprland`, `-dms`, `-noctalia`, `-noctura`) run the same `Hyprland`
+  process but are launched with `--config` pointing at their own
+  `~/.config/<edition>/` folder, where each ships its `keybindings.txt`. The old
+  `WM_MAP` mapped `Hyprland → hypr`, so the app looked in `~/.config/hypr/` and
+  found nothing on any of them. Detection now reads the running Hyprland's
+  `--config` argument and uses that folder's name, so every edition resolves to
+  its own cheatsheet. Verified live on `kiro-hyprland-dms`.
+
+### Technical Details
+- New `_hypr_config_dir()` reads `/proc/<pid>/cmdline` of the `Hyprland` process
+  (pid via `pgrep -x Hyprland`), parses `--config`/`--config=`, and returns the
+  parent dir name of the config file. `detect_wm()` special-cases Hyprland via
+  this helper before the generic `WM_MAP` scan; falls back to `hypr` (upstream
+  default) when no `--config` is present. `resolve_file()` is unchanged — its
+  generic `~/.config/<wm>/keybindings.txt` path already does the right thing.
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.07.06
 
 ### What Changed

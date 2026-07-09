@@ -26,6 +26,11 @@ WM_MAP = {
     "awesome": "awesome",
     "leftwm": "leftwm",
     "xfwm4": "xfce4",
+    # All Kiro Hyprland editions (kiro-hyprland/-dms/-noctalia/-noctura) run the
+    # same "Hyprland" process but are launched with --config pointing at their own
+    # ~/.config/<edition>/ folder, where each ships its keybindings.txt. detect_wm()
+    # special-cases Hyprland via _hypr_config_dir() to read that per-edition dir from
+    # the running process; "hypr" here is only the upstream-default fallback.
     "Hyprland": "hypr",
     # kiro-niri (noctalia-shell) and kiro-ohmyniri (waybar/mako) both run the same
     # "niri" process and ship to the same ~/.config/niri/keybindings.txt — one
@@ -52,8 +57,31 @@ WM_MAP = {
 }
 
 
+def _hypr_config_dir():
+    """For a running Hyprland, return its per-edition config-dir name (e.g.
+    'kiro-hyprland-dms') read from the process's --config argument, or None when
+    Hyprland is not running. Falls back to 'hypr' when no --config is present."""
+    r = subprocess.run(["pgrep", "-x", "Hyprland"], capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    pid = r.stdout.split()[0]
+    try:
+        args = [a for a in Path(f"/proc/{pid}/cmdline").read_bytes().decode().split("\0") if a]
+    except OSError:
+        return "hypr"
+    for i, a in enumerate(args):
+        if a == "--config" and i + 1 < len(args):
+            return Path(args[i + 1]).parent.name
+        if a.startswith("--config="):
+            return Path(a.split("=", 1)[1]).parent.name
+    return "hypr"
+
+
 def detect_wm():
     """Return the config-dir name of the running TWM, or None."""
+    hypr = _hypr_config_dir()
+    if hypr:
+        return hypr
     for proc, cfg in WM_MAP.items():
         if subprocess.run(["pgrep", "-x", proc], capture_output=True).returncode == 0:
             return cfg
