@@ -20,6 +20,9 @@ from parser import parse
 WM_MAP = {
     "ohmychadwm": "ohmychadwm",
     "chadwm": "chadwm",
+    # kiro-dusk (bakkeby's dwm fork) — binary and config dir are both "dusk";
+    # keybindings.txt lives at ~/.config/dusk/keybindings.txt.
+    "dusk": "dusk",
     "i3": "i3",
     "bspwm": "bspwm",
     "qtile": "qtile",
