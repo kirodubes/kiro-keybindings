@@ -2,6 +2,33 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.07.18
+
+### What Changed
+- **Fixed: on X11 tiling WMs the cheatsheet had no border and ignored Escape (and
+  all keyboard input).** Reported on `dusk`: pressing Esc did nothing and the window
+  floated with no frame. Root cause: the window used `Qt.FramelessWindowHint`, which
+  makes Qt tag it `_KDE_NET_WM_WINDOW_TYPE_OVERRIDE`. dwm-family WMs (dusk, chadwm, …)
+  treat that as an unmanaged override window — so they never draw a border and never
+  give it keyboard focus, leaving both the `Esc`-to-close shortcut and the live-search
+  field dead. Frameless is now used only on Wayland TWMs; X11 TWMs get a plain
+  `Qt.Dialog` the WM manages (floats it, draws its own border, gives it focus).
+  Verified live on `dusk` in the Kiro VM: window now carries dusk's 2px border, the
+  search field filters, and Esc closes it.
+
+### Technical Details
+- `main.py`: new `appFrameless` context property = `app.platformName() != "xcb" and not is_plasma`.
+  Gated on the Qt platform name rather than `XDG_SESSION_TYPE` (which reads `tty` under
+  dusk over SSH, unreliable). `xcb` = X11 → managed dialog; Wayland → keep frameless.
+- `Cheatsheet.qml`: window `flags` now a three-way choice — Plasma `Qt.Window`
+  (decorated), Wayland TWM `Qt.FramelessWindowHint | Qt.Dialog`, X11 TWM `Qt.Dialog`.
+- Not yet eyes-on: XFCE (X11 stacking — will now show a titlebar on the dialog, likely
+  fine) and the Wayland TWM editions (frameless path unchanged, but untested this pass).
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+- `usr/share/kiro-keybindings/Cheatsheet.qml`
+
 ## 2026.07.09
 
 ### What Changed

@@ -10,10 +10,16 @@ Window {
     title: "Kiro Keybindings"
     width: 1440
     height: 820
-    // Full desktops (Plasma) get normal window decorations; TWMs stay frameless.
+    // Plasma gets normal decorations; Wayland TWMs stay frameless; X11 TWMs use a plain
+    // Qt.Dialog. On X11 FramelessWindowHint tags the window _KDE_NET_WM_WINDOW_TYPE_OVERRIDE,
+    // which dwm-family WMs (dusk, chadwm, …) leave unmanaged — no border and no keyboard
+    // focus, so Escape and the search field never receive keys. A managed Qt.Dialog floats,
+    // gets the WM's border, and takes focus.
     flags: (typeof appDecorated !== "undefined" && appDecorated)
            ? Qt.Window
-           : (Qt.FramelessWindowHint | Qt.Dialog)
+           : (typeof appFrameless !== "undefined" && appFrameless)
+             ? (Qt.FramelessWindowHint | Qt.Dialog)
+             : Qt.Dialog
     color: win.t.bgBottom
 
     // ── Themes ──────────────────────────────────────────────────────────

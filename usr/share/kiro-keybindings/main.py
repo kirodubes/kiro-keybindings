@@ -272,8 +272,13 @@ def main():
     ctx.setContextProperty("appTheme", args.theme)
     ctx.setContextProperty("appHeader", args.header)
     ctx.setContextProperty("appKeys", args.keys)
-    # Full desktops (Plasma) expect normal window decorations; TWMs want it frameless.
-    ctx.setContextProperty("appDecorated", detect_wm() == "plasma")
+    # Full desktops (Plasma) expect normal window decorations; TWMs want no titlebar.
+    # Frameless is used only on Wayland TWMs: on X11, FramelessWindowHint makes Qt tag the
+    # window _KDE_NET_WM_WINDOW_TYPE_OVERRIDE, which dwm-family WMs leave unmanaged (no
+    # border, no keyboard focus). X11 TWMs get a plain Qt.Dialog the WM manages and focuses.
+    is_plasma = detect_wm() == "plasma"
+    ctx.setContextProperty("appDecorated", is_plasma)
+    ctx.setContextProperty("appFrameless", app.platformName() != "xcb" and not is_plasma)
     ctx.setContextProperty("appShot", bool(args.shot))
     ctx.setContextProperty("logoPath", QUrl.fromLocalFile(str(here / "assets" / "logo.png")).toString())
     engine.load(QUrl.fromLocalFile(str(here / "Cheatsheet.qml")))
