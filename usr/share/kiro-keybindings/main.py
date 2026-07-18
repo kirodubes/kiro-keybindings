@@ -25,6 +25,9 @@ WM_MAP = {
     "dusk": "dusk",
     "i3": "i3",
     "bspwm": "bspwm",
+    # kiro-hlwm (herbstluftwm) — binary, process and config dir are all
+    # "herbstluftwm"; keybindings.txt lives at ~/.config/herbstluftwm/.
+    "herbstluftwm": "herbstluftwm",
     "qtile": "qtile",
     "awesome": "awesome",
     "leftwm": "leftwm",

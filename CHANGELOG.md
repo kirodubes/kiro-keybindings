@@ -5,6 +5,10 @@ All notable changes to **kiro-keybindings** are documented here.
 ## 2026.07.18
 
 ### What Changed
+- **Added herbstluftwm (kiro-hlwm) to WM detection.** New `WM_MAP` entry
+  `"herbstluftwm": "herbstluftwm"` so the cheatsheet auto-detects the running
+  herbstluftwm process and renders `~/.config/herbstluftwm/keybindings.txt`.
+  Part of standing up the kiro-hlwm edition via `/kiro-create-x11-twm`.
 - **Fixed: on X11 tiling WMs the cheatsheet had no border and ignored Escape (and
   all keyboard input).** Reported on `dusk`: pressing Esc did nothing and the window
   floated with no frame. Root cause: the window used `Qt.FramelessWindowHint`, which
