@@ -55,9 +55,6 @@ WM_MAP = {
     # kiro-mango's compositor package is "mangowm" (upstream project "mangowc"),
     # but the installed binary is "mango" (config lives at ~/.config/mango/).
     "mango": "mango",
-    # kiro-miracle is the odd one out — a Mir-based tiler (AUR "miracle-wm-git",
-    # vendored into nemesis_repo); binary and config dir are both "miracle-wm".
-    "miracle-wm": "miracle-wm",
     "kwin_wayland": "plasma",
     "kwin_x11": "plasma",
 }

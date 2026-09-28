@@ -2,6 +2,30 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+## 2026.09.28
+
+### Miracle mapping removed
+
+**What Changed.** Removed the `miracle-wm` process-to-config mapping. Miracle has been dropped from
+Kiro: `mir` broke on the boost 1.92 soname bump and can no longer be rebuilt (its `wlcs` build
+dependency is gone), so `miracle-wm-git`, `mir` and `kiro-miracle` left nemesis_repo and ATT.
+
+**Technical Details.** One dict entry and its comment. Detection of every other desktop is unchanged.
+
+**Files Modified.**
+- `usr/share/kiro-keybindings/main.py`
+
+### Pin ruff to the classic rule set
+
+**What Changed.** Added `ruff.toml` (same as ATT's). ruff 0.16 widened its implicit rule set, so the
+global pre-commit hook began failing `up.sh` on untouched code (BLE001, PLW1510, I001...).
+
+**Technical Details.** `select = ["E4", "E7", "E9", "F"]`, `line-length = 120`, `E402` ignored for
+`gi.require_version()`. No code changes needed; `ruff check .` passes.
+
+**Files Modified.**
+- `ruff.toml` (new)
+
 ## 2026.07.18
 
 ### What Changed
