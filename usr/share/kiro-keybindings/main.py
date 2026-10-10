@@ -38,9 +38,11 @@ WM_MAP = {
     # special-cases Hyprland via _hypr_config_dir() to read that per-edition dir from
     # the running process; "hypr" here is only the upstream-default fallback.
     "Hyprland": "hypr",
-    # kiro-niri (noctalia-shell) and kiro-ohmyniri (waybar/mako) both run the same
-    # "niri" process and ship to the same ~/.config/niri/keybindings.txt — one
-    # entry covers both editions.
+    # All Kiro niri editions (kiro-niri-dms/-noctalia, kiro-ohmyniri) run the same
+    # "niri" process; each session wrapper exports NIRI_CONFIG pointing at its own
+    # ~/.config/<edition>/config.kdl, next to which it ships keybindings.txt.
+    # detect_wm() special-cases niri via _niri_config_dir(); "niri" here is only the
+    # upstream-default fallback.
     "niri": "niri",
     "wayfire": "wayfire",
     # kiro-sway ships swayfx (eye-candy sway fork); its package installs the
@@ -80,11 +82,32 @@ def _hypr_config_dir():
     return "hypr"
 
 
+def _niri_config_dir():
+    """For a running niri, return its per-edition config-dir name (e.g. 'kiro-niri-dms') from NIRI_CONFIG
+    (this process's environment, else the niri process's), or None when niri is not running. Falls back to
+    'niri' when NIRI_CONFIG is not set."""
+    r = subprocess.run(["pgrep", "-x", "niri"], capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    cfg = os.environ.get("NIRI_CONFIG")
+    if not cfg:
+        pid = r.stdout.split()[0]
+        try:
+            env = Path(f"/proc/{pid}/environ").read_bytes().decode(errors="replace").split("\0")
+        except OSError:
+            env = []
+        cfg = next((e.split("=", 1)[1] for e in env if e.startswith("NIRI_CONFIG=")), "")
+    return Path(os.path.expanduser(cfg)).parent.name if cfg else "niri"
+
+
 def detect_wm():
     """Return the config-dir name of the running TWM, or None."""
     hypr = _hypr_config_dir()
     if hypr:
         return hypr
+    niri = _niri_config_dir()
+    if niri:
+        return niri
     for proc, cfg in WM_MAP.items():
         if subprocess.run(["pgrep", "-x", proc], capture_output=True).returncode == 0:
             return cfg

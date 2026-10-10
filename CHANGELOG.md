@@ -2,6 +2,23 @@
 
 All notable changes to **kiro-keybindings** are documented here.
 
+
+## 2026.10.10
+
+### What Changed
+- **niri editions show their own keybindings.** For niri the viewer always opened `~/.config/niri/keybindings.txt`,
+  but every Kiro niri edition (kiro-niri-dms, kiro-niri-noctalia, kiro-ohmyniri) keeps its config and
+  `keybindings.txt` in its own `~/.config/<edition>/` folder. It now reads that folder from `NIRI_CONFIG`, which each
+  edition's session wrapper exports, the same way Hyprland editions are found through `--config`.
+
+### Technical Details
+- New `_niri_config_dir()`: when `niri` runs, take `NIRI_CONFIG` from this process's environment, else from
+  `/proc/<niri pid>/environ`; the folder name is the edition. Without `NIRI_CONFIG` it falls back to `niri`
+  (upstream's `~/.config/niri/`). Tested with kiro-niri-dms, kiro-ohmyniri (`~/` path) and no variable.
+
+### Files Modified
+- `usr/share/kiro-keybindings/main.py`
+
 ## 2026.09.28
 
 ### Miracle mapping removed
