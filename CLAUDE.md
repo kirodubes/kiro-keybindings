@@ -25,5 +25,5 @@ on Ctrl+Super+S, both shipped via kiro-xfce) and **KDE Plasma** (`kwin_wayland`/
 `~/.config/keybindings.txt` at the `.config` root — no `<wm>` subdir, since kiro-plasma-keybindings
 ships it there; launcher unhidden on KDE). In-app HTML/PDF export landed (header pills →
 `exporter.py`). Phase 2 remaining: wire the other 6 TWMs' launch entries, nemesis_repo package
-(`pyside6` dep, plus a chromium/brave **optdepend** for the PDF button) so it actually ships +
-updates on installed systems.
+so it actually ships + updates on installed systems. PDFs come from `python-weasyprint` (a hard dep since
+2026-10-17; installs often have only Firefox, which can't print headless); a Chromium browser is the fallback.

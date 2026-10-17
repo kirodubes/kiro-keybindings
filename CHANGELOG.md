@@ -3,6 +3,26 @@
 All notable changes to **kiro-keybindings** are documented here.
 
 
+## 2026.10.17
+
+### What Changed
+- **The PDF button works without a Chromium browser.** PDFs were printed by a headless Chromium-family browser,
+  but a normal Kiro install has only Firefox, so the PDF button failed with "no Chromium-family browser found".
+  PDFs are now made with WeasyPrint, which the package depends on. A Chromium browser is still used when
+  WeasyPrint is missing.
+- Key combos no longer wrap onto two lines in the PDF, and long rows keep a gap before their description.
+
+### Technical Details
+- `exporter.py`: new `render_pdf_weasyprint()` imports `weasyprint` lazily and returns False when it isn't
+  installed; `export()` tries it first, then falls back to `find_browser()` + `render_pdf()`. Print CSS gains
+  `.keys { flex-wrap: nowrap; white-space: nowrap; }` and a `.desc` left padding (WeasyPrint's flexbox ignores
+  `gap`/`flex-shrink` here). Tested in the niri QEMU VM (kiro-niri-noctalia, Firefox only): 3-page PDF in ~5 s.
+- Headless Vivaldi hung until the 60 s timeout in that VM, another reason not to rely on a browser.
+
+### Files Modified
+- `usr/share/kiro-keybindings/exporter.py`
+- `CLAUDE.md`
+
 ## 2026.10.10
 
 ### What Changed

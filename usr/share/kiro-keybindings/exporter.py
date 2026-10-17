@@ -188,9 +188,10 @@ TEMPLATE = """<!DOCTYPE html>
       background: #f2f2f2; color: #b36b00; border-bottom: 1px solid #ccc; break-after: avoid;
     }}
     .bind {{ break-inside: avoid; }}
+    .keys {{ flex-wrap: nowrap; white-space: nowrap; }}
     section h2 .num {{ background: var(--accent); color: #000; }}
     .bind:hover {{ background: none; }}
-    .desc {{ color: #222; opacity: 1; }}
+    .desc {{ color: #222; opacity: 1; padding-left: 0.5rem; }}
     .plus {{ color: #888; }}
     kbd {{ background: #eee; color: #000; border: 1px solid #bbb; }}
     footer {{ color: #555; border-top: 1px solid #ccc; }}
@@ -253,6 +254,16 @@ def find_browser():
     return None
 
 
+def render_pdf_weasyprint(html_path, pdf_path):
+    """Render the print view of html_path to pdf_path with WeasyPrint; return False when it isn't installed."""
+    try:
+        from weasyprint import HTML
+    except ImportError:
+        return False
+    HTML(filename=str(html_path)).write_pdf(str(pdf_path))
+    return True
+
+
 def render_pdf(html_path, pdf_path, browser):
     """Render the print view of html_path to pdf_path via a headless Chromium browser."""
     subprocess.run(
@@ -290,10 +301,13 @@ def export(txt_path, fmt, out_dir=None):
         return html_path
 
     if fmt == "pdf":
+        pdf_path = html_path.with_suffix(".pdf")
+        # WeasyPrint is the packaged dependency; a Kiro install often has only Firefox, which can't print headless.
+        if render_pdf_weasyprint(html_path, pdf_path):
+            return pdf_path
         browser = find_browser()
         if not browser:
-            raise RuntimeError("no Chromium-family browser found — cannot make a PDF")
-        pdf_path = html_path.with_suffix(".pdf")
+            raise RuntimeError("python-weasyprint not installed and no Chromium-family browser found — cannot make a PDF")
         render_pdf(html_path, pdf_path, browser)
         return pdf_path
 
